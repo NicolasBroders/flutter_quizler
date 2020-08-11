@@ -25,8 +25,19 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  List<Icon> resList = [];
+  List<Question> questionsList = [];
+  Question currentQuestion;
+  int questionIndex = 0;
+
   @override
   Widget build(BuildContext context) {
+    questionsList.add(new Question(
+        'You can lead a cow down stairs but not up stairs.', false));
+    questionsList.add(new Question(
+        'Approximately one quarter of human bones are in the feet.', true));
+    questionsList.add(new Question('A slug\'s blood is green.', true));
+    currentQuestion = questionsList[questionIndex];
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -37,7 +48,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                currentQuestion.question,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -61,7 +72,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked true.
+                updateUiWithAnswer(true);
               },
             ),
           ),
@@ -79,14 +90,55 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked false.
+                updateUiWithAnswer(false);
               },
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+        Row(
+          children: resList,
+        ), //TODO: Add a Row here as your score keeper
       ],
     );
+  }
+
+  void updateUiWithAnswer(bool userAnswer) {
+    setState(() {
+      addResToList(currentQuestion.checkAnswer(userAnswer));
+      questionIndex = (questionIndex + 1) % questionsList.length;
+    });
+  }
+
+  void addResToList(bool correct) {
+    if (correct) {
+      resList.add(
+        Icon(
+          Icons.check,
+          color: Colors.green,
+        ),
+      );
+    } else {
+      resList.add(
+        Icon(
+          Icons.close,
+          color: Colors.red,
+        ),
+      );
+    }
+  }
+}
+
+class Question {
+  String question;
+  bool answer;
+
+  Question(String question, bool answer) {
+    this.question = question;
+    this.answer = answer;
+  }
+
+  bool checkAnswer(bool answer) {
+    return this.answer == answer;
   }
 }
 
