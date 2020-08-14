@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quizler/quiz_brain.dart';
+
+import 'Question.dart';
 
 void main() => runApp(Quizzler());
+
+QuizBrain quizBrain = new QuizBrain();
 
 class Quizzler extends StatelessWidget {
   @override
@@ -26,18 +31,12 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> resList = [];
-  List<Question> questionsList = [];
   Question currentQuestion;
   int questionIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    questionsList.add(new Question(
-        'You can lead a cow down stairs but not up stairs.', false));
-    questionsList.add(new Question(
-        'Approximately one quarter of human bones are in the feet.', true));
-    questionsList.add(new Question('A slug\'s blood is green.', true));
-    currentQuestion = questionsList[questionIndex];
+    currentQuestion = quizBrain.questionList[questionIndex];
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -105,7 +104,7 @@ class _QuizPageState extends State<QuizPage> {
   void updateUiWithAnswer(bool userAnswer) {
     setState(() {
       addResToList(currentQuestion.checkAnswer(userAnswer));
-      questionIndex = (questionIndex + 1) % questionsList.length;
+      questionIndex = (questionIndex + 1) % quizBrain.questionList.length;
     });
   }
 
@@ -127,23 +126,3 @@ class _QuizPageState extends State<QuizPage> {
     }
   }
 }
-
-class Question {
-  String question;
-  bool answer;
-
-  Question(String question, bool answer) {
-    this.question = question;
-    this.answer = answer;
-  }
-
-  bool checkAnswer(bool answer) {
-    return this.answer == answer;
-  }
-}
-
-/*
-question1: 'You can lead a cow down stairs but not up stairs.', false,
-question2: 'Approximately one quarter of human bones are in the feet.', true,
-question3: 'A slug\'s blood is green.', true,
-*/
