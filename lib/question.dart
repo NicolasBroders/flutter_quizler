@@ -1,13 +1,17 @@
 class Question {
-  String question;
-  bool answer;
+  String _question;
+  bool _answer;
 
   Question(String question, bool answer) {
-    this.question = question;
-    this.answer = answer;
+    _question = question;
+    _answer = answer;
   }
 
   bool checkAnswer(bool answer) {
-    return this.answer == answer;
+    return _answer == answer;
+  }
+
+  String getQuestionText() {
+    return _question;
   }
 }

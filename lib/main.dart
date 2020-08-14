@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quizler/quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'Question.dart';
 
@@ -32,11 +33,10 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   List<Icon> resList = [];
   Question currentQuestion;
-  int questionIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    currentQuestion = quizBrain.questionList[questionIndex];
+    currentQuestion = quizBrain.getQuestionFromList();
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -47,7 +47,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                currentQuestion.question,
+                currentQuestion.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -96,15 +96,38 @@ class _QuizPageState extends State<QuizPage> {
         ),
         Row(
           children: resList,
-        ), //TODO: Add a Row here as your score keeper
+        ),
       ],
     );
   }
 
   void updateUiWithAnswer(bool userAnswer) {
     setState(() {
-      addResToList(currentQuestion.checkAnswer(userAnswer));
-      questionIndex = (questionIndex + 1) % quizBrain.questionList.length;
+      if (quizBrain.isFinished()) {
+        Alert(
+          context: context,
+          title: "The end !",
+          desc: "The quiz is finished.",
+          buttons: [
+            DialogButton(
+              child: Text(
+                "Retry",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              onPressed: () {
+                setState(() {
+                  resetGame();
+                });
+                Navigator.pop(context);
+              },
+              color: Color.fromRGBO(0, 179, 134, 1.0),
+            ),
+          ],
+        ).show();
+      } else {
+        addResToList(currentQuestion.checkAnswer(userAnswer));
+        quizBrain.nextQuestion();
+      }
     });
   }
 
@@ -124,5 +147,10 @@ class _QuizPageState extends State<QuizPage> {
         ),
       );
     }
+  }
+
+  void resetGame() {
+    resList.clear();
+    quizBrain.retry();
   }
 }
